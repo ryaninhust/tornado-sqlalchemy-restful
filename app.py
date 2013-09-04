@@ -49,7 +49,15 @@ class BaseHandler(tornado.web.RequestHandler):
 class IndexHandler(BaseHandler):
 
     def get(self):
-        self.write({'init': 'hello world'})
+        try:
+            testModel = models.TestModel(name='hello world')
+            self.db.add(testModel)
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+        finally:
+            self.write({'init': testModel.id})
+            self.db.close()
 
     def post(self):
         self.write({'init': 'hello world'})
